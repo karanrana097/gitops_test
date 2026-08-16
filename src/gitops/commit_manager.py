@@ -67,14 +67,16 @@ class CommitManager:
             if self._is_git_repo(repo_dir):
                 try:
                     import subprocess
-                    subprocess.run(["git", "add", local_filepath], cwd=repo_dir, check=True, capture_output=True)
+                    target_file = os.path.basename(local_filepath)
+                    subprocess.run(["git", "add", target_file], cwd=repo_dir, check=True, capture_output=True)
                     subprocess.run(["git", "commit", "-m", commit_message], cwd=repo_dir, check=True, capture_output=True)
                     res = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo_dir, check=True, capture_output=True, text=True)
                     sha = res.stdout.strip()
                     logger.info(f"[LOCAL GIT REPO] Committed change on branch {branch_name} (Commit SHA: {sha[:7]})")
                     return True, sha, f"Committed change to {repo_relative_path} (SHA: {sha[:7]})"
                 except Exception as e:
-                    logger.warning(f"Local git commit warning: {e}")
+                    err_msg = e.stderr.decode() if hasattr(e, 'stderr') and e.stderr else str(e)
+                    logger.warning(f"Local git commit warning: {err_msg}")
 
             # Local simulation mode fallback
             simulated_sha = "simulated_sha_" + os.urandom(4).hex()
