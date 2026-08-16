@@ -1,0 +1,18 @@
+allowed_prefixes:
+  - "DS-"
+  - "CADP-"
+
+allowed_environments:
+  - "dev"
+  - "qa"
+  - "stage"
+  - "prod"
+
+allowed_scopes:
+  - "schema"
+  - "table"
+  - "volume"
+
+sample_repo_dir: "sample_repo/data_products"
+owner_mapping_file: "config/owner_mapping.csv"
+default_base_branch: "main"

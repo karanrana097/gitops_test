@@ -1,0 +1,16 @@
+data_product: DS-Digital-AB-Testing-Evaluation
+owner: sample.owner@example.com
+team: Data Science Platform
+permissions:
+  - consumer: DS-TDA-Governance
+    source_environment: dev
+    target_environment: dev
+    access_type: dev_to_dev
+    access_scope: schema
+    status: active
+  - consumer: DS-TDA-Governance
+    source_environment: dev
+    target_environment: prod
+    access_type: dev_to_prod
+    access_scope: schema
+    status: pending_pr

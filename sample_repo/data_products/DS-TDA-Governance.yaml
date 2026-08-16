@@ -1,0 +1,10 @@
+data_product: DS-TDA-Governance
+owner: governance.lead@example.com
+team: Governance & Quality
+permissions:
+  - consumer: CADP-Customer-Insights
+    source_environment: stage
+    target_environment: prod
+    access_type: stage_to_prod
+    access_scope: table
+    status: active
