@@ -62,7 +62,9 @@ class PullRequestManager:
                 url = res.stdout.strip()
                 if url:
                     # Convert git@github.com:owner/repo.git or https://github.com/owner/repo.git
-                    clean_url = url.replace("git@github.com:", "https://github.com/").rstrip(".git")
+                    clean_url = url.replace("git@github.com:", "https://github.com/")
+                    if clean_url.endswith(".git"):
+                        clean_url = clean_url[:-4]
                     live_pr_url = f"{clean_url}/compare/main...{branch_name}?expand=1"
                     logger.info(f"[REAL GITHUB REMOTE] Live Pull Request link generated: {live_pr_url}")
                     return True, live_pr_url, f"Pull request compare link created for branch {branch_name}."
