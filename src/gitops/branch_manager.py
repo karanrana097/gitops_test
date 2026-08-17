@@ -55,12 +55,17 @@ class BranchManager:
                     res = subprocess.run(["git", "checkout", "-b", branch_name], cwd=repo_dir, capture_output=True, text=True)
                     if res.returncode != 0:
                         subprocess.run(["git", "checkout", branch_name], cwd=repo_dir, capture_output=True, text=True)
-                    logger.info(f"[LOCAL GIT REPO] Created & checked out real git branch: {branch_name}")
-                    return True, f"Real local git branch '{branch_name}' created"
+                    
+                    # Try pushing feature branch to origin remote
+                    push_res = subprocess.run(["git", "push", "-u", "origin", branch_name], cwd=repo_dir, capture_output=True, text=True)
+                    if push_res.returncode == 0:
+                        logger.info(f"[REAL GITHUB REMOTE] Created & pushed branch '{branch_name}' to origin.")
+                    else:
+                        logger.info(f"[LOCAL GIT REPO] Created & checked out real git branch: {branch_name}")
+                    return True, f"Real git branch '{branch_name}' created"
                 except Exception as e:
                     logger.warning(f"Local git branch creation warning: {e}")
 
             # Local mode simulation fallback
             logger.info(f"[LOCAL SIMULATION] Created feature branch: {branch_name}")
-            return True, f"[SIMULATED] Feature branch '{branch_name}' created locally"
 

@@ -64,15 +64,20 @@ class CommitManager:
                 return False, None, str(e)
         else:
             # Check if local directory is a real git repository
-            if self._is_git_repo(repo_dir):
+            if self._is_git_repo("."):
                 try:
                     import subprocess
-                    target_file = os.path.basename(local_filepath)
-                    subprocess.run(["git", "add", target_file], cwd=repo_dir, check=True, capture_output=True)
-                    subprocess.run(["git", "commit", "-m", commit_message], cwd=repo_dir, check=True, capture_output=True)
-                    res = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo_dir, check=True, capture_output=True, text=True)
+                    subprocess.run(["git", "add", repo_relative_path], check=True, capture_output=True)
+                    subprocess.run(["git", "commit", "-m", commit_message], check=True, capture_output=True)
+                    res = subprocess.run(["git", "rev-parse", "HEAD"], check=True, capture_output=True, text=True)
                     sha = res.stdout.strip()
                     logger.info(f"[LOCAL GIT REPO] Committed change on branch {branch_name} (Commit SHA: {sha[:7]})")
+                    
+                    # Push commit to origin remote
+                    push_res = subprocess.run(["git", "push", "origin", branch_name], capture_output=True, text=True)
+                    if push_res.returncode == 0:
+                        logger.info(f"[REAL GITHUB REMOTE] Pushed commit {sha[:7]} to origin/{branch_name}")
+
                     return True, sha, f"Committed change to {repo_relative_path} (SHA: {sha[:7]})"
                 except Exception as e:
                     err_msg = e.stderr.decode() if hasattr(e, 'stderr') and e.stderr else str(e)
@@ -82,4 +87,3 @@ class CommitManager:
             simulated_sha = "simulated_sha_" + os.urandom(4).hex()
             logger.info(f"[LOCAL SIMULATION] Committed change to {repo_relative_path} on branch {branch_name} (SHA: {simulated_sha[:7]})")
             return True, simulated_sha, f"[SIMULATED] Change committed to {repo_relative_path}"
-

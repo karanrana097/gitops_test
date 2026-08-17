@@ -55,7 +55,21 @@ class PullRequestManager:
                 logger.error(f"Failed to create GitHub PR: {e}")
                 return False, None, str(e)
         else:
-            # Simulation mode
+            # Check if origin remote URL is configured
+            try:
+                import subprocess
+                res = subprocess.run(["git", "config", "--get", "remote.origin.url"], capture_output=True, text=True)
+                url = res.stdout.strip()
+                if url:
+                    # Convert git@github.com:owner/repo.git or https://github.com/owner/repo.git
+                    clean_url = url.replace("git@github.com:", "https://github.com/").rstrip(".git")
+                    live_pr_url = f"{clean_url}/compare/main...{branch_name}?expand=1"
+                    logger.info(f"[REAL GITHUB REMOTE] Live Pull Request link generated: {live_pr_url}")
+                    return True, live_pr_url, f"Pull request compare link created for branch {branch_name}."
+            except Exception:
+                pass
+
+            # Simulation mode fallback
             simulated_url = f"https://github.com/simulated-org/simulated-repo/pull/{request.request_id.replace('REQ-', '')}"
             logger.info(f"[LOCAL SIMULATION] Simulated Pull Request generated: {simulated_url}")
             return True, simulated_url, "[SIMULATED] Pull request created locally."
