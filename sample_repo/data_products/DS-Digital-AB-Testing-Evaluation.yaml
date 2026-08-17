@@ -8,3 +8,9 @@ permissions:
     access_type: dev_to_dev
     access_scope: schema
     status: active
+  - consumer: DS-TDA-Governance
+    source_environment: dev
+    target_environment: prod
+    access_type: dev_to_prod
+    access_scope: schema
+    status: pending_pr
